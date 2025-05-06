@@ -9,6 +9,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "knex": "ts-node ./node_modules/knex/bin/cli.js",
+    "knex:make-migration" : "npm run knex migrate:make",
     "knex:migrate": "npm run knex -- migrate:latest",
     "knex:rollback": "npm run knex -- migrate:rollback"
   },
