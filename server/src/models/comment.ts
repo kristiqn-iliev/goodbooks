@@ -7,6 +7,9 @@ export class Comment extends BaseModel {
   static get tableName() {
     return "comments";
   }
+  $beforeUpdate() {
+    this.updatedAt = new Date();
+  }
   userId!: number;
   bookId!: number;
   text!: string;

@@ -1,9 +1,11 @@
 import Knex from "knex";
 import { config } from "./config";
 import { knexSnakeCaseMappers, Model } from "objection";
-import { User } from "./models/user";
-import { Book } from "./models/book";
-import { Comment } from "./models/comment";
+import { error } from "console";
+import { UserService } from "./services/user-service";
+import { GenreService } from "./services/genre-service";
+import { BookService } from "./services/book-service";
+import { CommentService } from "./services/comment-service";
 
 const knex = Knex({
   client: "pg",
@@ -14,16 +16,6 @@ const knex = Knex({
 
 Model.knex(knex);
 
-async function main() {
-  const userWithRelations = await User.query()
-    .findById(1)
-    .withGraphFetched("[comments]");
-
-  console.log(
-    userWithRelations?.username,
-    userWithRelations?.comments?.map((c) => c.text)
-  );
-  await knex.destroy();
-}
+async function main() {}
 
 main();
