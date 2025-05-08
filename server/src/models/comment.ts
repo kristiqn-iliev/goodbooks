@@ -14,22 +14,24 @@ export class Comment extends BaseModel {
   user?: User;
   book?: Book;
 
-  static relationMappings = {
-    user: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: User,
-      join: {
-        from: "comments.id",
-        to: "users.id",
+  static get relationMappings() {
+    return {
+      user: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: "comments.id",
+          to: "users.id",
+        },
       },
-    },
-    book: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: Book,
-      join: {
-        from: "comments.id",
-        to: "books.id",
+      book: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: Book,
+        join: {
+          from: "comments.id",
+          to: "books.id",
+        },
       },
-    },
-  };
+    };
+  }
 }

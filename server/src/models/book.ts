@@ -2,12 +2,13 @@ import { Model } from "objection";
 import { BaseModel } from "./base-model";
 import { User } from "./user";
 import { Comment } from "./comment";
+import { Genre } from "./genre";
 
 export class Book extends BaseModel {
   static get tableName() {
     return "books";
   }
-  userId!: number; //foreign key, user that posted the book
+  userId!: number;
   title!: string;
   author!: string;
   publishedIn!: Date;
@@ -17,24 +18,40 @@ export class Book extends BaseModel {
 
   creator?: User;
   comments?: Comment[];
+  genres?: Genre[];
 
-  static relationMappings = {
-    creator: {
-      relation: Model.BelongsToOneRelation,
-      modelClass: User,
-      join: {
-        from: "books.userId",
-        to: "users.id",
+  static get relationMappings() {
+    return {
+      creator: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: User,
+        join: {
+          from: "books.userId",
+          to: "users.id",
+        },
       },
-    },
 
-    comments: {
-      relation: Model.HasManyRelation,
-      modelClass: Comment,
-      join: {
-        from: "books.id",
-        to: "comments.id",
+      comments: {
+        relation: Model.HasManyRelation,
+        modelClass: Comment,
+        join: {
+          from: "books.id",
+          to: "comments.bookId",
+        },
       },
-    },
-  };
+
+      genres: {
+        relation: Model.ManyToManyRelation,
+        modelClass: Genre,
+        join: {
+          from: "books.id",
+          through: {
+            from: "book_genres.bookId",
+            to: "book_genres.genreId",
+          },
+          to: "genres.id",
+        },
+      },
+    };
+  }
 }

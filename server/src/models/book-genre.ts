@@ -1,8 +1,8 @@
-import { BaseModel } from "./base-model";
+import { Model } from "objection";
 
-export class BookGenres extends BaseModel {
+export class BookGenres extends Model {
   static get tableName() {
-    return "book-genres";
+    return "book_genres";
   }
   bookId!: number; //fk
   genreId!: number; //fk

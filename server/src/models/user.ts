@@ -13,24 +13,25 @@ export class User extends BaseModel {
 
   books?: Book[];
   comments?: Comment[];
-
-  static relationMappings = {
-    books: {
-      relation: Model.HasManyRelation,
-      modelClass: Book,
-      join: {
-        from: "users.id",
-        to: "books.userId",
+  static get relationMappings() {
+    return {
+      books: {
+        relation: Model.HasManyRelation,
+        modelClass: Book,
+        join: {
+          from: "users.id",
+          to: "books.userId",
+        },
       },
-    },
 
-    comments: {
-      relation: Model.HasManyRelation,
-      modelClass: Comment,
-      join: {
-        from: "users.id",
-        to: "comments.userId",
+      comments: {
+        relation: Model.HasManyRelation,
+        modelClass: Comment,
+        join: {
+          from: "users.id",
+          to: "comments.userId",
+        },
       },
-    },
-  };
+    };
+  }
 }
