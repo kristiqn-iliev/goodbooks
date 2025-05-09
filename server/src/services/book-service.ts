@@ -45,9 +45,6 @@ export class BookService {
     }
   }
 
-  //delete method where comments will get deleted as well
-  //and also bookgenres
-  //
   async delete(id: number, user: User) {
     const book = await Book.query().findById(id);
     const owner = await book?.$relatedQuery("creator");
