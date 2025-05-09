@@ -1,4 +1,3 @@
-import { transaction } from "objection";
 import { Book } from "../models/book";
 import { GenreService } from "./genre-service";
 import { User } from "../models/user";
@@ -44,5 +43,22 @@ export class BookService {
     } catch (error) {
       throw error;
     }
+  }
+
+  //delete method where comments will get deleted as well
+  //and also bookgenres
+  //
+  async delete(id: number, user: User) {
+    const book = await Book.query().findById(id);
+    const owner = await book?.$relatedQuery("creator");
+    if (user !== owner) {
+      throw new Error(`Unauthorized deletion attempt by user ${user.id}`);
+    }
+    await Book.query().deleteById(id);
+    console.log(`Book with id ${id} deleted successfully.`);
+  }
+
+  async findById(id: number) {
+    return await Book.query().findById(id);
   }
 }

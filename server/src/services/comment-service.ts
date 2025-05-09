@@ -53,4 +53,8 @@ export class CommentService {
     const comments = await user.$relatedQuery("comments");
     return comments.slice(start, end);
   }
+
+  async findById(id: number) {
+    return await Comment.query().findById(id);
+  }
 }

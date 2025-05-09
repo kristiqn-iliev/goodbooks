@@ -41,6 +41,6 @@ export class UserService {
     return User.query().where("email", email).first();
   }
   async findById(id: number) {
-    return User.query().findById(id).first();
+    return User.query().findById(id);
   }
 }
