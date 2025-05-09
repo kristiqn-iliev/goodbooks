@@ -4,7 +4,6 @@ type UserProps = Pick<User, "email" | "username" | "password">;
 
 export class UserService {
   async register({ email, username, password }: UserProps) {
-    /*Check if email is already registered*/
     let user = await this.findByEmail(email);
     if (user) {
       throw new Error("This email is taken!");
@@ -24,7 +23,6 @@ export class UserService {
   }
 
   async deleteUser(username: string) {
-    //because every user adds books, when deleting a user, all books that he possesses will be assigned to userID 0, so no one but the admin has the rights to remove or update this book
     const user = await this.findByName(username);
     if (!user) {
       throw new Error("User with this name does not exist!");

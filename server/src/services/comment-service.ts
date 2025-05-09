@@ -1,8 +1,6 @@
-import { knex, Knex } from "knex";
 import { Book } from "../models/book";
 import { Comment } from "../models/comment";
 import { User } from "../models/user";
-import { start } from "repl";
 
 export class CommentService {
   async addComment(text: string, user: User, book: Book) {
