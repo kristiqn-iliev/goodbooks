@@ -9,6 +9,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "knex": "ts-node ./node_modules/knex/bin/cli.js",
+    "knex:make-migration": "npm run knex migrate:make",
     "knex:migrate": "npm run knex -- migrate:latest",
     "knex:rollback": "npm run knex -- migrate:rollback"
   },
@@ -22,6 +23,7 @@
     "@dotenvx/dotenvx": "^1.43.0",
     "convict": "^6.2.4",
     "knex": "^3.1.0",
+    "objection": "^3.1.5",
     "pg": "^8.15.6"
   }
 }
