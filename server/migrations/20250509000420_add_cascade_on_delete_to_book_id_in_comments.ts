@@ -2,14 +2,14 @@ import type { Knex } from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.schema.alterTable("comments", (table) => {
-    table.dropForeign(["user_id"]);
+    table.dropForeign(["book_id"]);
   });
 
   await knex.schema.alterTable("comments", (table) => {
     table
-      .foreign("user_id")
+      .foreign("book_id")
       .references("id")
-      .inTable("users")
+      .inTable("books")
       .onDelete("CASCADE");
   });
 }
@@ -20,6 +20,6 @@ export async function down(knex: Knex): Promise<void> {
   });
 
   await knex.schema.alterTable("comments", (table) => {
-    table.foreign("user_id").references("id").inTable("users");
+    table.foreign("book_id").references("id").inTable("books");
   });
 }
