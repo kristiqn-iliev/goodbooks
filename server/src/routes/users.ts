@@ -3,9 +3,6 @@ import { UserService } from "../services/user-service";
 
 export const usersRouter = Router();
 
-//can paste some middleware that will happen
-//for only users queries
-
 const userService = new UserService();
 
 usersRouter.use(json());
@@ -22,7 +19,7 @@ usersRouter.get("/:userId", async (req, res) => {
     res.status(404).json({ error: `User with id ${id} not found!` });
     return;
   }
-  res.json({ user: user });
+  res.status(200).json({ user: user });
 });
 
 usersRouter.post("/", async (req, res) => {
@@ -38,5 +35,10 @@ usersRouter.post("/", async (req, res) => {
 
   const user = await userService.register({ email, username, password });
 
-  res.json({ user: user });
+  res.status(201).json({ user: user });
+});
+
+usersRouter.get("/", async (req, res) => {
+  const users = await userService.list();
+  res.json({ users: users });
 });
