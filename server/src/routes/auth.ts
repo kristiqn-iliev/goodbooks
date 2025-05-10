@@ -1,23 +1,38 @@
 import { json, Router } from "express";
-import { UserService } from "../services/user-service";
+import { AuthService } from "../services/auth-service";
+import { requestHandler } from "../middlewares/request-handler";
+import { JwtService } from "../services/jwt-service";
 
 export const authRouter = Router();
 
 authRouter.use(json());
 
-const userService = new UserService();
+const authService = new AuthService();
+const jwtService = new JwtService();
 
-//dedicate auth router to register and login
-authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  if (typeof email !== "string" || typeof password !== "string") {
+authRouter.post("/register", async (req, res) => {
+  const { email, username, password } = req.body;
+  if (
+    typeof email !== "string" ||
+    typeof username !== "string" ||
+    typeof password !== "string"
+  ) {
     res.status(400).json({ error: "Bad request" });
     return;
   }
 
-  const user = await userService.login({ email, password });
+  const user = await authService.register({ email, username, password });
 
-  const token = `books-token-${user.id}`;
-
-  res.status(200).json({ user, token });
+  res.status(201).json({ user: user });
 });
+
+authRouter.post(
+  "/login",
+  requestHandler(async (req) => {
+    const user = await authService.login(req.body);
+
+    const token = jwtService.sign({ userId: user.id });
+
+    return { user, token };
+  })
+);

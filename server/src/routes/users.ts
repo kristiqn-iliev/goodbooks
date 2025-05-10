@@ -1,5 +1,7 @@
 import { json, Router } from "express";
 import { UserService } from "../services/user-service";
+import { requestHandler } from "../middlewares/request-handler";
+import { BadRequestError, BaseError, NotFoundError } from "../errors";
 
 export const usersRouter = Router();
 
@@ -7,38 +9,30 @@ const userService = new UserService();
 
 usersRouter.use(json());
 
-usersRouter.get("/:userId", async (req, res) => {
-  const { userId } = req.params;
-  const id = Number(userId);
-  if (Number.isNaN(id)) {
-    res.status(400).json({ error: "Bad request" });
-    return;
-  }
-  const user = await userService.findById(Number(id));
-  if (!user) {
-    res.status(404).json({ error: `User with id ${id} not found!` });
-    return;
-  }
-  res.status(200).json({ user: user });
-});
+usersRouter.get(
+  "/:userId",
+  requestHandler(async (req) => {
+    const { userId } = req.params;
 
-usersRouter.post("/", async (req, res) => {
-  const { email, username, password } = req.body;
-  if (
-    typeof email !== "string" ||
-    typeof username !== "string" ||
-    typeof password !== "string"
-  ) {
-    res.status(400).json({ error: "Bad request" });
-    return;
-  }
+    const id = Number(userId);
 
-  const user = await userService.register({ email, username, password });
+    if (Number.isNaN(id)) {
+      throw new BadRequestError("Not an id!");
+    }
 
-  res.status(201).json({ user: user });
-});
+    const user = await userService.findById(Number(id));
+    if (!user) {
+      throw new NotFoundError(`User with id ${id} not found!`);
+    }
 
-usersRouter.get("/", async (req, res) => {
-  const users = await userService.list();
-  res.json({ users: users });
-});
+    return user;
+  })
+);
+
+usersRouter.get(
+  "/",
+  requestHandler(async () => {
+    const users = await userService.list();
+    return users;
+  })
+);

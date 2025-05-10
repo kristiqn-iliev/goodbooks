@@ -1,38 +1,45 @@
 import { json, Router } from "express";
 
-import { BookService } from "../services/book-service";
-import { UserService } from "../services/user-service";
+import { BookService, CreateBookProps } from "../services/book-service";
+import { authMiddleware } from "../middlewares/auth";
+import { BadRequestError, NotFoundError } from "../errors";
+import { requestHandler } from "../middlewares/request-handler";
 
 export const booksRouter = Router();
+const bookService = new BookService();
 
 booksRouter.use((req, res, next) => {
   console.log(req.headers);
   next();
 });
 
-const bookService = new BookService();
-const userService = new UserService();
+booksRouter.get(
+  "/:bookId",
+  requestHandler(async (req) => {
+    const { bookId } = req.params;
 
-booksRouter.post("/", async (req, res) => {
-  const { book } = req.body;
+    const id = Number(bookId);
 
-  const authHeader = req.headers.authorization;
+    if (Number.isNaN(id)) {
+      throw new BadRequestError("Not an id!");
+    }
 
-  if (!authHeader?.startsWith("books-token-")) {
-    res.status(401).send({ error: "Unauthorized" });
-    return;
-  }
+    const book = await bookService.findById(id);
+    if (!book) {
+      throw new NotFoundError("Not found!");
+    }
+    return { book: book };
+  })
+);
 
-  const userId = Number(authHeader.substring("books-token-".length));
-
-  if (Number.isNaN(userId)) {
-    res.status(400).send({ error: "Unauthorized" });
-    return;
-  }
-  if (book.userId != userId) {
-    res.status(401).send({ error: `Unauthorized user with id ${userId}` });
-    return;
-  }
-
-  res.status(201).send({ status: ":)", userId });
-});
+booksRouter.post(
+  "/create",
+  authMiddleware,
+  requestHandler(async (req) => {
+    let book: CreateBookProps = req.body;
+    console.log(book.author);
+    console.log(book.title);
+    await bookService.create(book, ["kris"]);
+    return book;
+  })
+);
