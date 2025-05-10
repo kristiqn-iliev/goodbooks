@@ -1,27 +1,34 @@
 import Knex from "knex";
 import { config } from "./config";
 import { knexSnakeCaseMappers, Model } from "objection";
-import express from "express";
-// const knex = Knex({
-//   client: "pg",
-//   connection: config.get("db"),
-//   ...knexSnakeCaseMappers(),
-//   debug: true,
-// });
+import express, { json } from "express";
+import { usersRouter } from "./routes/users";
+import { booksRouter } from "./routes/books";
+import { authRouter } from "./routes/auth";
 
-// Model.knex(knex);
+const knex = Knex({
+  client: "pg",
+  connection: config.get("db"),
+  ...knexSnakeCaseMappers(),
+  debug: true,
+});
+
+Model.knex(knex);
 
 const app = express();
 
-app.get("/kris", async (req, res) => {
-  res.send("Hello World");
+app.use(json());
+
+app.use((req, res, next) => {
+  console.log(req.body);
+  next();
 });
 
-app.get("/", async (req, res) => {
-  res.send("Hello ni66a!!!!!!");
-});
+app.use("/users", usersRouter);
+app.use("/books", booksRouter);
+app.use("/auth", authRouter);
 
-app.listen(3000);
+app.listen(config.get("server.port"));
 
 async function main() {}
 

@@ -30,4 +30,19 @@ export const config = convict({
       env: "DB_PASS",
     },
   },
+  server: {
+    port: {
+      format: "port",
+      default: 3000,
+      env: "SERVER_PORT",
+    },
+  },
+
+  jwt: {
+    secretKey: {
+      format: String,
+      default: "",
+      env: "JWT_SECRET_KEY",
+    },
+  },
 }).validate();
