@@ -1,11 +1,10 @@
 import Knex from "knex";
 import { config } from "./config";
 import { knexSnakeCaseMappers, Model } from "objection";
-import { error } from "console";
-import { UserService } from "./services/user-service";
-import { GenreService } from "./services/genre-service";
-import { BookService } from "./services/book-service";
-import { CommentService } from "./services/comment-service";
+import express, { json } from "express";
+import { usersRouter } from "./routes/users";
+import { booksRouter } from "./routes/books";
+import { authRouter } from "./routes/auth";
 
 const knex = Knex({
   client: "pg",
@@ -15,6 +14,21 @@ const knex = Knex({
 });
 
 Model.knex(knex);
+
+const app = express();
+
+app.use(json());
+
+app.use((req, res, next) => {
+  console.log(req.body);
+  next();
+});
+
+app.use("/users", usersRouter);
+app.use("/books", booksRouter);
+app.use("/auth", authRouter);
+
+app.listen(config.get("server.port"));
 
 async function main() {}
 
