@@ -3,8 +3,9 @@ import { GenreService } from "./genre-service";
 import { User } from "../models/user";
 import { BookGenres } from "../models/book-genre";
 
-interface CreateBookProps {
+export interface CreateBookProps {
   title: string;
+  userId: number;
   author: string;
   publishedIn: Date;
   image: string;
@@ -15,16 +16,32 @@ interface CreateBookProps {
 export class BookService {
   private genreService = new GenreService();
 
-  async create(input: { book: CreateBookProps; user: User; genres: string[] }) {
+  async create(
+    {
+      title: title,
+      userId: userId,
+      author: author,
+      publishedIn: publishedIn,
+      image: image,
+      summary: summary,
+      description: description,
+    }: CreateBookProps,
+    genres: string[]
+  ) {
     try {
       await Book.transaction(async (trx) => {
         const book = await Book.query(trx).insert({
-          userId: input.user.id,
-          ...input.book,
+          title: title,
+          userId,
+          author,
+          publishedIn,
+          image,
+          summary,
+          description,
         });
 
         const genreIds = await Promise.all(
-          input.genres.map(
+          genres.map(
             async (genre) =>
               (
                 await this.genreService.findOrCreate(genre, trx)
@@ -41,6 +58,7 @@ export class BookService {
         );
       });
     } catch (error) {
+      console.error(error);
       throw error;
     }
   }
