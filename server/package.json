@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "nodemon",
     "knex": "ts-node ./node_modules/knex/bin/cli.js",
     "knex:make-migration": "npm run knex migrate:make",
     "knex:migrate": "npm run knex -- migrate:latest",
@@ -16,12 +16,15 @@
   "devDependencies": {
     "@types/convict": "^6.1.6",
     "@types/node": "^22.15.7",
+    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.43.0",
+    "@types/express": "^5.0.1",
     "convict": "^6.2.4",
+    "express": "^5.1.0",
     "knex": "^3.1.0",
     "objection": "^3.1.5",
     "pg": "^8.15.6"
