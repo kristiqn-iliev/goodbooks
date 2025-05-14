@@ -32,6 +32,14 @@ booksRouter.get(
   })
 );
 
+booksRouter.get(
+  "/",
+  requestHandler(async (req) => {
+    const books = await bookService.list();
+    return books;
+  })
+);
+
 booksRouter.post(
   "/create",
   authMiddleware,

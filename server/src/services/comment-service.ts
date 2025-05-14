@@ -1,8 +1,11 @@
 import { Book } from "../models/book";
 import { Comment } from "../models/comment";
 import { User } from "../models/user";
+import { UserService } from "./user-service";
 
 export class CommentService {
+  private userService = new UserService();
+
   async addComment(text: string, user: User, book: Book) {
     const comment = await Comment.query()
       .insert({
@@ -48,6 +51,18 @@ export class CommentService {
   async allFromUser(user: User, page: number, pageSize: number) {
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
+    const comments = await user.$relatedQuery("comments");
+    return comments.slice(start, end);
+  }
+
+  async allFromUserByName(username: string, page: number, pageSize: number) {
+    const start = (page - 1) * pageSize;
+    const end = page * pageSize;
+    console.log("called");
+    const user = await this.userService.findByName(username);
+    if (!user) {
+      throw new Error("No such user has been registered!");
+    }
     const comments = await user.$relatedQuery("comments");
     return comments.slice(start, end);
   }

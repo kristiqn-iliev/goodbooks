@@ -5,6 +5,8 @@ import express, { json } from "express";
 import { usersRouter } from "./routes/users";
 import { booksRouter } from "./routes/books";
 import { authRouter } from "./routes/auth";
+import { UserService } from "./services/user-service";
+import { commentsRouter } from "./routes/comments";
 
 const knex = Knex({
   client: "pg",
@@ -27,6 +29,7 @@ app.use((req, res, next) => {
 app.use("/users", usersRouter);
 app.use("/books", booksRouter);
 app.use("/auth", authRouter);
+app.use("/comments", commentsRouter);
 
 app.listen(config.get("server.port"));
 
