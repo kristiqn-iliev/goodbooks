@@ -63,6 +63,10 @@ export class BookService {
     }
   }
 
+  async list() {
+    return await Book.query();
+  }
+
   async delete(id: number, user: User) {
     const book = await Book.query().findById(id);
     const owner = await book?.$relatedQuery("creator");

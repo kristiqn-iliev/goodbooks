@@ -36,6 +36,7 @@ export class AuthService {
     if (!user) {
       throw new Error("No such user has been registered!");
     }
+    console.log(user);
 
     const doesMatch = await bcrypt.compare(password, user.password);
 
