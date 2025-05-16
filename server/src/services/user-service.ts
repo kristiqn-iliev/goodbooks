@@ -1,4 +1,5 @@
 import { User } from "../models/user";
+import { UserTransformer } from "../transformers/user-transformer";
 
 type UserEntry = Pick<User, "id" | "email" | "username">;
 
@@ -21,12 +22,15 @@ export class UserService {
   }
   async findById(id: number) {
     const user = await User.query().findById(id);
-    return user ? this.toUserEntry(user) : undefined;
+    return user ? UserTransformer.toUserEntry(user) : undefined;
   }
 
   async list() {
     const users = await User.query();
-    return users.map((user) => this.toUserEntry(user));
+    const user = users[0];
+    const comments = await user.$relatedQuery("books");
+    console.log(comments);
+    return users.map((user) => UserTransformer.toUserEntry(user));
   }
 
   toUserEntry(userFromDb: User): UserEntry {

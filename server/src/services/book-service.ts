@@ -2,6 +2,7 @@ import { Book } from "../models/book";
 import { GenreService } from "./genre-service";
 import { User } from "../models/user";
 import { BookGenres } from "../models/book-genre";
+import { BookTransformer } from "../transformers/book-transformer";
 
 export interface CreateBookProps {
   title: string;
@@ -78,6 +79,11 @@ export class BookService {
   }
 
   async findById(id: number) {
-    return await Book.query().findById(id);
+    const book = await Book.query().withGraphFetched("creator").findById(id);
+    if (!book) {
+      throw new Error("Not Found!");
+    }
+
+    return BookTransformer.toBookEntry(book);
   }
 }

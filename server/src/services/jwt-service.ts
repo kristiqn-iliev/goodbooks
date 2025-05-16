@@ -1,9 +1,15 @@
 import { config } from "../config";
 import jwt from "jsonwebtoken";
+import { z, ZodError } from "zod";
+import { BadRequestError } from "../errors";
 
-export interface JwtPayload {
-  userId: number;
-}
+const jwtPayloadSchema = z.object({
+  userId: z.number(),
+});
+
+export type JwtPayload = z.infer<typeof jwtPayloadSchema>;
+
+export class InvalidJwtPayloadError extends Error {}
 
 export class JwtService {
   sign(payload: JwtPayload) {
@@ -15,11 +21,14 @@ export class JwtService {
   verify(token: string): JwtPayload {
     const decoded = jwt.verify(token, config.get("jwt.secretKey"));
 
-    const payload = typeof decoded === "string" ? JSON.parse(decoded) : decoded;
+    try {
+      return jwtPayloadSchema.parse(decoded);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        throw new InvalidJwtPayloadError();
+      }
 
-    if (typeof payload.userId !== "number") {
-      throw new Error("Invalid data!");
+      throw error;
     }
-    return payload;
   }
 }

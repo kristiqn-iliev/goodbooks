@@ -1,7 +1,12 @@
 import { json, Router } from "express";
-import { AuthService } from "../services/auth-service";
+import {
+  AuthService,
+  registerUserDataSchema,
+  loginUserDataSchema,
+} from "../services/auth-service";
 import { requestHandler } from "../middlewares/request-handler";
 import { JwtService } from "../services/jwt-service";
+import { BadRequestError } from "../errors";
 
 export const authRouter = Router();
 
@@ -10,26 +15,23 @@ authRouter.use(json());
 const authService = new AuthService();
 const jwtService = new JwtService();
 
-authRouter.post("/register", async (req, res) => {
-  const { email, username, password } = req.body;
-  if (
-    typeof email !== "string" ||
-    typeof username !== "string" ||
-    typeof password !== "string"
-  ) {
-    res.status(400).json({ error: "Bad request" });
-    return;
-  }
+authRouter.post(
+  "/register",
+  requestHandler(async (req) => {
+    const data = registerUserDataSchema.parse(req.body);
 
-  const user = await authService.register({ email, username, password });
+    const user = await authService.register(data);
 
-  res.status(201).json({ user: user });
-});
+    return user;
+  })
+);
 
 authRouter.post(
   "/login",
   requestHandler(async (req) => {
-    const user = await authService.login(req.body);
+    const data = loginUserDataSchema.parse(req.body);
+
+    const user = await authService.login(data);
 
     const token = jwtService.sign({ userId: user.id });
 
