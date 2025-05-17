@@ -17,26 +17,26 @@ describe("Time", () => {
     expect(() => Time.parse("45:23")).toThrow(InvalidTimeError);
   });
   it("throws an error if non existent minutes is passed", () => {
-    expect(() => Time.parse("12:66")).toThrow(InvalidTimeError);
+    expect(() => Time.parse("12:66")).toThrow(InvalidMinutesError);
   });
 
   it("can add minutes", () => {
     const time = Time.parse("12:23");
-    time.addMinutes(1);
-    expect(time.hours).toEqual(12);
-    expect(time.minutes).toEqual(24);
+    const newTime = time.addMinutes(1);
+    expect(newTime.hours).toEqual(12);
+    expect(newTime.minutes).toEqual(24);
   });
   it("it can handle overflowing minutes", () => {
     const time = Time.parse("12:23");
-    time.addMinutes(59);
-    expect(time.hours).toEqual(13);
-    expect(time.minutes).toEqual(22);
+    const newTime = time.addMinutes(59);
+    expect(newTime.hours).toEqual(13);
+    expect(newTime.minutes).toEqual(22);
   });
   it("it can handle overflowing hours", () => {
     const time = Time.parse("23:59");
-    time.addMinutes(1);
-    expect(time.hours).toEqual(0);
-    expect(time.minutes).toEqual(0);
+    const newTime = time.addMinutes(1);
+    expect(newTime.hours).toEqual(0);
+    expect(newTime.minutes).toEqual(0);
   });
 
   it("throws an error if negative minutes are passed", () => {
@@ -49,6 +49,8 @@ describe("Time", () => {
     const time = Time.parse("12:23");
 
     expect(time.toString()).toEqual("12:23");
+
+    console.log(time.toString());
   });
   it("can pad zeroes at the start of minutes", () => {
     const time = Time.parse("12:03");
