@@ -19,6 +19,11 @@ export const config = convict({
       default: "books",
       env: "DB_NAME",
     },
+    testDatabase: {
+      format: String,
+      default: "books-test",
+      env: "DB_NAME_TEST",
+    },
     user: {
       format: String,
       default: "",

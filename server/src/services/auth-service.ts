@@ -35,9 +35,11 @@ export class AuthService {
       throw new Error("This username is taken!");
     }
 
-    user = await User.query()
-      .insertAndFetch({ email, username, password: hashedPassword })
-      .into("users");
+    user = await User.query().insertAndFetch({
+      email,
+      username,
+      password: hashedPassword,
+    });
 
     console.log(
       `User ${user.username} registered successfully with id ${user.id}.`
