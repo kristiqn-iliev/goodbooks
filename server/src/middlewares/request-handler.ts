@@ -1,5 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import { BaseError } from "../errors";
+import { ZodError } from "zod";
 
 export const requestHandler = <T>(
   handler: (req: Request, res: Response) => Promise<T>
@@ -12,6 +13,13 @@ export const requestHandler = <T>(
     } catch (error) {
       if (error instanceof BaseError) {
         res.status(error.status).send({ message: error.message });
+        return;
+      }
+
+      if (error instanceof ZodError) {
+        res
+          .status(400)
+          .send({ message: "Bad request error!", errors: error.flatten() });
         return;
       }
 

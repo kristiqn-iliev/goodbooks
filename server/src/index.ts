@@ -7,14 +7,9 @@ import { booksRouter } from "./routes/books";
 import { authRouter } from "./routes/auth";
 import { UserService } from "./services/user-service";
 import { commentsRouter } from "./routes/comments";
+import { knexConfig } from "../knexfile";
 
-const knex = Knex({
-  client: "pg",
-  connection: config.get("db"),
-  ...knexSnakeCaseMappers(),
-  debug: true,
-});
-
+const knex = Knex(knexConfig.development);
 Model.knex(knex);
 
 const app = express();
