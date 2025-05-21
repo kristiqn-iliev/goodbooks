@@ -3,43 +3,27 @@ import { GenreService } from "./genre-service";
 import { User } from "../models/user";
 import { BookGenres } from "../models/book-genre";
 import { BookTransformer } from "../transformers/book-transformer";
+import { z } from "zod";
 
-export interface CreateBookProps {
-  title: string;
-  userId: number;
-  author: string;
-  publishedIn: Date;
-  image: string;
-  summary?: string;
-  description?: string;
-}
+export const createBookDataSchema = z.object({
+  title: z.string().nonempty(),
+  userId: z.number().positive(),
+  author: z.string().nonempty(),
+  publishedIn: z.date(),
+  image: z.string().url(),
+  summary: z.string().optional(),
+  description: z.string().optional(),
+});
+
+type CreateBookData = z.infer<typeof createBookDataSchema>;
 
 export class BookService {
   private genreService = new GenreService();
 
-  async create(
-    {
-      title: title,
-      userId: userId,
-      author: author,
-      publishedIn: publishedIn,
-      image: image,
-      summary: summary,
-      description: description,
-    }: CreateBookProps,
-    genres: string[]
-  ) {
+  async create(input: CreateBookData, genres: string[]) {
     try {
       await Book.transaction(async (trx) => {
-        const book = await Book.query(trx).insert({
-          title: title,
-          userId,
-          author,
-          publishedIn,
-          image,
-          summary,
-          description,
-        });
+        const book = await Book.query(trx).insertAndFetch(input);
 
         const genreIds = await Promise.all(
           genres.map(
