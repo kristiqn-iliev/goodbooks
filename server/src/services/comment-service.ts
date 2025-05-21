@@ -6,24 +6,23 @@ import { UserService } from "./user-service";
 export class CommentService {
   private userService = new UserService();
 
-  async addComment(text: string, user: User, book: Book) {
+  async addComment(text: string, userId: number, bookId: number) {
     const comment = await Comment.query()
-      .insert({
-        userId: user.id,
-        bookId: book.id,
+      .insertAndFetch({
+        userId,
+        bookId,
         text,
       })
       .into("comments");
-    console.log(`${user.username} added comment with id ${comment.id}!`);
+    console.log(`${userId} added comment with id ${comment.id}!`);
+
+    return comment;
   }
 
-  async deleteComment(id: number, user: User) {
+  async deleteComment(id: number) {
     const comment = await Comment.query().findById(id);
     if (!comment) {
       throw new Error(`Comment with ${id} not found!`);
-    }
-    if (user.id !== comment.userId) {
-      throw new Error(`Unauthorized deletion attempt!`);
     }
 
     await Comment.query().deleteById(id);

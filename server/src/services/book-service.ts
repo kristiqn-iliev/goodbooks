@@ -15,7 +15,7 @@ export const createBookDataSchema = z.object({
   description: z.string().optional(),
 });
 
-type CreateBookData = z.infer<typeof createBookDataSchema>;
+export type CreateBookData = z.infer<typeof createBookDataSchema>;
 
 export class BookService {
   private genreService = new GenreService();
