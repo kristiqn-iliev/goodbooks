@@ -1,68 +1,68 @@
-import { Book } from "../models/book";
+import { z } from "zod";
 import { Comment } from "../models/comment";
-import { User } from "../models/user";
-import { UserService } from "./user-service";
+
+const commentDataSchema = z.object({
+  userId: z.number().positive(),
+  bookId: z.number().positive(),
+  text: z.string(),
+});
+
+type CommentData = z.infer<typeof commentDataSchema>;
 
 export class CommentService {
-  private userService = new UserService();
-
-  async addComment(text: string, userId: number, bookId: number) {
+  async addComment(input: CommentData) {
     const comment = await Comment.query()
-      .insertAndFetch({
-        userId,
-        bookId,
-        text,
-      })
+      .insertAndFetch(input)
       .into("comments");
-    console.log(`${userId} added comment with id ${comment.id}!`);
+    console.log(`${input.userId} added comment with id ${comment.id}!`);
 
     return comment;
   }
 
-  async deleteComment(id: number) {
-    const comment = await Comment.query().findById(id);
+  async deleteComment(commentId: number) {
+    const comment = await Comment.query().findById(commentId);
     if (!comment) {
-      throw new Error(`Comment with ${id} not found!`);
+      throw new Error(`Comment with ${commentId} not found!`);
     }
 
-    await Comment.query().deleteById(id);
-    console.log(`Comment with index ${id} deleted successfully!`);
+    await Comment.query().deleteById(commentId);
+    console.log(`Comment with index ${commentId} deleted successfully!`);
   }
 
-  async editComment(text: string, id: number, user: User) {
-    const comment = await Comment.query().findById(id);
+  async editComment(text: string, commentId: number) {
+    const comment = await Comment.query().findById(commentId);
     if (!comment) {
-      throw new Error(`Comment with ${id} not found!`);
+      throw new Error(`Comment with ${commentId} not found!`);
     }
-    if (user.id !== comment.userId) {
-      throw new Error(`Unauthorized update attempt!`);
-    }
-    await Comment.query().findById(id).patch({ text });
+
+    await Comment.query().findById(commentId).patch({ text });
   }
 
-  async allForBook(book: Book, page: number, pageSize: number) {
+  async allForBook(bookId: number, page: number, pageSize: number) {
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
-    const comments = await book.$relatedQuery("comments");
+    const comments = await Comment.query().where("bookId", bookId);
     return comments.slice(start, end);
   }
 
-  async allFromUser(user: User, page: number, pageSize: number) {
+  async allFromUser(userId: number, page: number, pageSize: number) {
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
-    const comments = await user.$relatedQuery("comments");
+    const comments = await Comment.query().where("userId", userId);
     return comments.slice(start, end);
   }
 
-  async allFromUserByName(username: string, page: number, pageSize: number) {
+  async allFromUserForBook(
+    userId: number,
+    bookId: number,
+    page: number,
+    pageSize: number
+  ) {
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
-    console.log("called");
-    const user = await this.userService.findByName(username);
-    if (!user) {
-      throw new Error("No such user has been registered!");
-    }
-    const comments = await user.$relatedQuery("comments");
+    const comments = await Comment.query()
+      .where("userId", userId)
+      .where("bookId", bookId);
     return comments.slice(start, end);
   }
 
