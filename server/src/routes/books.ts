@@ -1,6 +1,6 @@
 import { json, Router } from "express";
 
-import { BookService, CreateBookProps } from "../services/book-service";
+import { BookService, CreateBookData } from "../services/book-service";
 import { authMiddleware } from "../middlewares/auth";
 import { BadRequestError, NotFoundError } from "../errors";
 import { requestHandler } from "../middlewares/request-handler";
@@ -38,7 +38,7 @@ booksRouter.post(
   "/create",
   authMiddleware,
   requestHandler(async (req) => {
-    let book: CreateBookProps = req.body;
+    let book: CreateBookData = req.body;
     console.log(book.author);
     console.log(book.title);
     await bookService.create(book, ["kris"]);
