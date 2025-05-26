@@ -9,6 +9,8 @@ import { z } from "zod";
 export const booksRouter = Router();
 const bookService = new BookService();
 
+booksRouter.use(json());
+
 const getBookSchema = z.object({
   bookId: z.coerce.number(),
 });

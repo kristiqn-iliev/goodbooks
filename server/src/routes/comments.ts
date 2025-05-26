@@ -22,12 +22,9 @@ const getCommentsPaginatedSchema = z.object({
   pageSize: z.coerce.number(),
 });
 
-const deleteCommentSchema = z.object({
-  commentId: z.coerce.number(),
-});
+const deleteCommentSchema = z.coerce.number();
 
 const editCommentSchema = z.object({
-  commentId: z.coerce.number(),
   newText: z.string(),
 });
 
@@ -76,14 +73,16 @@ commentsRouter.post(
   "/:bookId",
   authMiddleware,
   requestHandler(async (req, res) => {
-    const { bookId } = getCommentsSchema.parse(req.params.bookId);
-    const { userId } = getCommentsSchema.parse(res.locals.user.id);
-    const { text } = getCommentsSchema.parse(req.body);
+    // const { bookId } = getCommentsSchema.parse(req.params.bookId);
+    const userId = res.locals.user.id;
+    const text = req.body.text;
+    const bookId = Number.parseInt(req.params.bookId);
 
-    console.log(bookId, userId, text);
+    console.log(userId);
+    console.log(text);
+    console.log(bookId);
 
     const comment = await commentService.addComment({ bookId, userId, text });
-
     console.log(comment);
   })
 );
@@ -92,7 +91,10 @@ commentsRouter.delete(
   "/:commentId",
   authMiddleware,
   requestHandler(async (req) => {
-    const { commentId } = deleteCommentSchema.parse(req.params.id);
+    const commentId = deleteCommentSchema.parse(req.params.commentId);
+
+    console.log(commentId);
+
     await commentService.deleteComment(commentId);
   })
 );
@@ -101,7 +103,10 @@ commentsRouter.patch(
   "/:commentId",
   authMiddleware,
   requestHandler(async (req) => {
-    const { commentId, newText } = editCommentSchema.parse(req.params.id);
+    const commentId = Number.parseInt(req.params.commentId);
+    const { newText } = editCommentSchema.parse(req.body);
+
+    console.log(commentId);
     await commentService.editComment(newText, commentId);
   })
 );

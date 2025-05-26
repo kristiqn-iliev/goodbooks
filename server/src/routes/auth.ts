@@ -6,7 +6,6 @@ import {
 } from "../services/auth-service";
 import { requestHandler } from "../middlewares/request-handler";
 import { JwtService } from "../services/jwt-service";
-import { BadRequestError } from "../errors";
 
 export const authRouter = Router();
 

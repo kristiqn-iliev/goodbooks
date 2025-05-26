@@ -25,6 +25,8 @@ export class CommentService {
       throw new Error(`Comment with ${commentId} not found!`);
     }
 
+    console.log("do we get here?");
+
     await Comment.query().deleteById(commentId);
     console.log(`Comment with index ${commentId} deleted successfully!`);
   }
@@ -46,6 +48,7 @@ export class CommentService {
   }
 
   async allFromUser(userId: number, page: number, pageSize: number) {
+    console.log(userId);
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
     const comments = await Comment.query().where("userId", userId);
@@ -61,8 +64,8 @@ export class CommentService {
     const start = (page - 1) * pageSize;
     const end = page * pageSize;
     const comments = await Comment.query()
-      .where("userId", userId)
-      .where("bookId", bookId);
+      .where("bookId", bookId)
+      .where("userId", userId);
     return comments.slice(start, end);
   }
 
